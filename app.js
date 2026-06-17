@@ -1,20 +1,22 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-// REPLACE WITH YOUR FIREBASE PROJECT CONFIGURATION
+// Your verified Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyANWgxLrNSdCpuwK6FV3JuaCVEqp7XDT24",
+    authDomain: "data-bank-on.firebaseapp.com",
+    projectId: "data-bank-on",
+    storageBucket: "data-bank-on.firebasestorage.app",
+    messagingSenderId: "1093372768449",
+    appId: "1:1093372768449:web:130cf82cdb749216212440",
+    measurementId: "G-D7TRDG2WPP"
 };
 
+// Initialize Firebase and Auth services
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Dom Elements
+// DOM Elements
 const authContainer = document.getElementById('auth-container');
 const dashboardContainer = document.getElementById('dashboard-container');
 const loginForm = document.getElementById('login-form');
@@ -27,7 +29,7 @@ const applyFiltersBtn = document.getElementById('apply-filters-btn');
 
 let rawLeadsData = [];
 
-// Track auth changes securely
+// Monitor authentication state shifts
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         authContainer.classList.add('hidden');
@@ -40,7 +42,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Login Form Action
+// Login Execution Pipeline
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     authError.classList.add('hidden');
@@ -55,15 +57,15 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-// Logout Button Action
+// Terminate User Session
 logoutBtn.addEventListener('click', () => signOut(auth));
 
-// Fetch Data via Secure Serverless Netlify Function Middleware
+// Handle Secure Tokens and Fetch Remote Records via Netlify Backend
 async function fetchSecureDashboardData(filters = {}) {
     const user = auth.currentUser;
     if (!user) return;
 
-    // Get JWT ID token from Firebase to authenticate server request
+    // Retrieve temporary JWT token to validate request on the backend function
     const token = await user.getIdToken();
 
     try {
@@ -76,22 +78,22 @@ async function fetchSecureDashboardData(filters = {}) {
             body: JSON.stringify(filters)
         });
 
-        if (!response.ok) throw new Error('Unauthorized or internal error');
+        if (!response.ok) throw new Error('Unauthorized API response payload');
         return await response.json();
     } catch (err) {
         console.error(err);
-        leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:red">Failed to authenticate access layer query.</td></tr>`;
+        leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center" style="color:var(--error)">Security handoff error. Check backend server logs.</td></tr>`;
     }
 }
 
 async function initializeDashboard() {
-    leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">Fetching records...</td></tr>`;
+    leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">Decompressing data streams...</td></tr>`;
     const data = await fetchSecureDashboardData();
     if (!data) return;
 
     rawLeadsData = data.leads || [];
     
-    // Populate dropdown with unique regions/cities dynamically
+    // Dynamically rebuild region menu from structural database items
     const regions = data.regions || [];
     filterRegion.innerHTML = '<option value="">All Regions</option>' + 
         regions.map(r => `<option value="${r}">${r}</option>`).join('');
@@ -101,7 +103,7 @@ async function initializeDashboard() {
 
 function renderTable(leads) {
     if (leads.length === 0) {
-        leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">No matching leads located.</td></tr>`;
+        leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">No structural leads matching criteria found.</td></tr>`;
         return;
     }
 
@@ -111,14 +113,14 @@ function renderTable(leads) {
             <td>${lead.category || 'N/A'}</td>
             <td>${lead.phone || 'N/A'}</td>
             <td>${lead.email || 'N/A'}</td>
-            <td>${lead.website ? `<a href="${lead.website}" target="_blank">Link</a>` : 'N/A'}</td>
+            <td>${lead.website ? `<a href="${lead.website}" target="_blank" rel="noopener">Link</a>` : 'N/A'}</td>
             <td>⭐ ${lead.rating || '0'} (${lead.review_count || 0})</td>
             <td><button class="secondary-btn" onclick="navigator.clipboard.writeText('${lead.phone || ''}')">Copy Phone</button></td>
         </tr>
     `).join('');
 }
 
-// Client Side Filter Execution
+// Trigger Client Filters 
 applyFiltersBtn.addEventListener('click', async () => {
     const filters = {
         region: filterRegion.value,
@@ -127,7 +129,7 @@ applyFiltersBtn.addEventListener('click', async () => {
         hasWebsite: document.getElementById('filter-website').checked
     };
     
-    leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">Applying backend filters...</td></tr>`;
+    leadsTbody.innerHTML = `<tr><td colspan="7" class="text-center">Filtering rows on server tier...</td></tr>`;
     const data = await fetchSecureDashboardData(filters);
     if (data) renderTable(data.leads || []);
 });
