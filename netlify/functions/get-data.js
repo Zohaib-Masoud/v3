@@ -1,8 +1,7 @@
-const { createClient } = require('@supabase/supabase-client');
+const { createClient } = require('@supabase/supabase-js');
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin for token validation
-// Netlify functions use environment variables set in the Netlify Dashboard UI
+// Initialize Firebase Admin for token validation using Netlify environment variables
 if (!admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert({
@@ -50,14 +49,13 @@ exports.handler = async (event, context) => {
         }
 
         // Limit maximum return rows to prevent massive batch downloads (Security requirement)
-        // If user is a known Admin, you can choose to skip this limit constraint
         query = query.limit(100);
 
         const { data: leads, error } = await query;
         if (error) throw error;
 
         // Fetch distinct cities/regions from jobs to populate filter options cleanly
-        const { data: jobLocations } = await supabase.from('jobs').select('city').distinct();
+        const { data: jobLocations } = await supabase.from('jobs').select('city');
         const regions = jobLocations ? [...new Set(jobLocations.map(j => j.city))].filter(Boolean) : [];
 
         return {
