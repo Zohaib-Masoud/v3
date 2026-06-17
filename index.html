@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Analytics Bank</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-container" class="card">
+        <h2>Lead Bank Login</h2>
+        <p>Enter your credentials to access the secure dashboard.</p>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="name@company.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" id="login-btn">Sign In</button>
+        </form>
+        <div id="auth-error" class="error-msg hidden"></div>
+    </div>
+
+    <div id="dashboard-container" class="hidden">
+        <header class="navbar">
+            <div class="brand">🚀 Lead Generation Dashboard</div>
+            <div class="user-profile">
+                <span id="user-display-email"></span>
+                <button id="logout-btn">Sign Out</button>
+            </div>
+        </header>
+
+        <main class="dashboard-layout">
+            <section class="filters-sidebar card">
+                <h3>Filters</h3>
+                
+                <div class="form-group">
+                    <label for="filter-region">Region / City</label>
+                    <select id="filter-region">
+                        <option value="">All Regions</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="filter-tile">Map Tile Keyword</label>
+                    <input type="text" id="filter-tile" placeholder="e.g. tile_x_y">
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label><input type="checkbox" id="filter-email"> Has Email</label>
+                    <label><input type="checkbox" id="filter-website"> Has Website</label>
+                </div>
+
+                <button id="apply-filters-btn">Apply Filters</button>
+            </section>
+
+            <section class="data-content card">
+                <div class="table-header">
+                    <h3>Leads Listing</h3>
+                    <div class="actions">
+                        <button id="copy-csv-btn" class="secondary-btn">Copy as CSV</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="leads-table">
+                        <thead>
+                            <tr>
+                                <th>Business Name</th>
+                                <th>Category</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Website</th>
+                                <th>Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-tbody">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading secure data layers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
